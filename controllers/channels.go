@@ -1,9 +1,9 @@
 package controllers
 
-import "provider_gateway_mq/schema"
+import "provider_gateway_mq/schemas"
 
 // ReplyChannels keep waiting channels for reply messages from rabbit
-var ReplyChannels = make(map[string]chan schema.ReplyMessage)
+var ReplyChannels = make(map[string]chan schemas.MessageReply)
 
-// PublishChannels provide channels to publish rabbit messages
-var PublishChannels = make(chan schema.CreateMessage, 10)
+// PublishChannels channel to publish rabbit messages
+var PublishChannels = make(chan schemas.MessageCreate, 10)

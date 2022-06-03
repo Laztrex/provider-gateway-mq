@@ -4,8 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CORSMiddleware is always very specific to use case,
+// so adding very minimal placeholder here
 // CORS (Cross-Origin Resource Sharing)
-// CORSMiddleware is specific to use case, so adding very minimal placeholder here
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -14,7 +15,6 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET")
 		c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(200)
 		} else {

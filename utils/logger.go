@@ -1,11 +1,14 @@
 package utils
 
 import (
+	"os"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"os"
 )
 
+// Modify the init function if you change logging library
+// Find and replace the imports in the rest of the app
 func init() {
 	logLevel := GetEnvVar("LOG_LEVEL")
 
@@ -24,6 +27,6 @@ func init() {
 		log.Logger = log.With().Str("host", host).Logger()
 	}
 
-	log.Logger = log.With().Str("service", "provider-mq").Logger()
+	log.Logger = log.With().Str("service", "controller-mq").Logger()
 	log.Logger = log.With().Caller().Logger()
 }

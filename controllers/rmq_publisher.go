@@ -3,73 +3,44 @@ package controllers
 import (
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
-	"provider_gateway_mq/utils"
 )
 
-type RMQProducer struct {
-	Queue            string
-	ConnectionString string
-}
+func (conn *RMQSpec) PublishConnecting() {
 
-func (x RMQProducer) OnError(err error, msg string) {
-	if err != nil {
-		log.Err(err).Msgf("Error while publishing message on '$s' queue. Error message: %s", x.Queue, msg)
+	err := conn.Connect()
+	conn.OnError(err, "Failed to connect to RabbitMQ while publishing")
+
+	if conn.Exchange != "" {
+		err = conn.ExchangeDeclare()
+		conn.OnError(err, "Failed to declare exchange while publishing")
+	}
+
+	err = conn.QueueDeclare()
+	conn.OnError(err, "Failed to declare a queue while publishing")
+
+	if conn.Exchange != "" {
+		err = conn.QueueBind()
+		conn.OnError(err, "Failed to bind a queue while publishing")
 	}
 }
 
-func (x RMQProducer) PublishMessages() {
-	tlsConf := utils.GetRmqTlsConf()
-
-	exchange := utils.GetEnvVar("TOPIC")
-	routingKey := utils.GetEnvVar("ROUTING_KEY")
-
-	conn, err := amqp.DialTLS(x.ConnectionString, tlsConf)
-	x.OnError(err, "Failed to connect to RabbitMQ")
-
-	defer conn.Close()
-
-	channel, err := conn.Channel()
-	x.OnError(err, "Failed to open a channel")
-
-	defer channel.Close()
-
-	err = channel.ExchangeDeclare(
-		exchange,
-		"topic",
-		true,
-		false,
-		false,
-		false,
-		nil,
-	)
-
-	queue, err := channel.QueueDeclare(
-		x.Queue,
-		false,
-		false,
-		false,
-		false,
-		nil,
-	)
-	x.OnError(err, "Failed to declare a queue")
-
-	err = channel.QueueBind(
-		queue.Name,
-		utils.GetEnvVar("BINDING_KEY"),
-		exchange,
-		false,
-		nil,
-	)
-	x.OnError(err, "Failed to bind a queue")
+func (conn *RMQSpec) PublishMessages() {
 
 	for {
 		select {
+		case err := <-conn.Err:
+			err = conn.Reconnect()
+			if err != nil {
+				panic(err)
+			}
+
 		case msg := <-PublishChannels:
-			err = channel.Publish(
-				exchange,
-				routingKey,
-				false,
-				false,
+			err := conn.Channel.Publish(
+				conn.Exchange, // exchange
+				//conn.RoutingKey, // routing key
+				msg.RoutingKey,
+				false, // mandatory
+				false, // immediate
 				amqp.Publishing{
 					ContentType:   "application/json",
 					Body:          []byte(msg.Body.Message),
@@ -78,9 +49,10 @@ func (x RMQProducer) PublishMessages() {
 					ReplyTo:       msg.ReplyTo,
 				},
 			)
-			x.OnError(err, "Failed to publish a message")
-
-			log.Printf("INFO: [%v] - published msg: %v", msg.CorrelationId, msg.Body)
+			if err != nil {
+				log.Err(err).Msgf("ERROR: fail to publish msg: %s", msg.CorrelationId)
+			}
+			log.Printf("INFO: [%v] - published", msg.CorrelationId)
 		}
 	}
 }

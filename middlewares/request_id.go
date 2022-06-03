@@ -7,6 +7,7 @@ import (
 	"provider_gateway_mq/consts"
 )
 
+// RequestID Request ID middleware
 func RequestID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var requestId string
@@ -19,9 +20,10 @@ func RequestID() gin.HandlerFunc {
 		} else {
 			requestId = uuid.New().String()
 		}
-
+		// Set context variable
 		c.Set("RqUID", requestId)
 		c.Request.Header["RqUID"] = []string{requestId}
+
 		c.Next()
 	}
 }

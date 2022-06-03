@@ -2,82 +2,52 @@ package controllers
 
 import (
 	"github.com/rs/zerolog/log"
-	"github.com/streadway/amqp"
-	"os"
-	"provider_gateway_mq/schema"
-	"provider_gateway_mq/utils"
+
+	"provider_gateway_mq/schemas"
 )
 
-type RMQConsumer struct {
-	Queue            string
-	ConnectionString string
-}
+func (conn *RMQSpec) ConsumeMessages() {
+	// conn
 
-func (x RMQConsumer) OnError(err error, msg string) {
-	if err != nil {
-		log.Err(err).Msgf("Error while consuming message on '$s' queue. Error message: %s", x.Queue, msg)
-		os.Exit(1)
-	}
-}
+	err := conn.Connect()
+	conn.OnError(err, "Failed to connect to RabbitMQ while consuming")
 
-func (x RMQConsumer) ConsumeMessages() {
-	tlsConf := utils.GetRmqTlsConf()
+	err = conn.QueueDeclare()
+	conn.OnError(err, "Failed to declare a queue while consuming")
 
-	// set conn
-	conn, err := amqp.DialTLS(x.ConnectionString, tlsConf)
-	x.OnError(err, "Failed to connect to RabbitMQ")
-	// notify ?
-
-	defer conn.Close()
-
-	log.Printf("INFO: Successful init consumer conn")
-
-	amqpChannel, err := conn.Channel()
-	x.OnError(err, "Failed to open a channel")
-
-	queue, err := amqpChannel.QueueDeclare(
-		x.Queue,
-		false,
-		false,
-		false,
-		false,
-		nil,
+	msgChannel, err := conn.Channel.Consume(
+		conn.Queue, // queue
+		"",         // consumer
+		false,      // auto-ack
+		false,      // exclusive
+		false,      // no-local
+		false,      // no-wait
+		nil,        // args
 	)
-	x.OnError(err, "Failed to declare a queue")
-
-	msgChannel, err := amqpChannel.Consume(
-		queue.Name,
-		"",
-		false,
-		false,
-		false,
-		false,
-		nil,
-	)
-	x.OnError(err, "ERROR: Failed to consume channel")
+	conn.OnError(err, "ERROR: fail create channel")
 
 	for {
 		select {
 		case msg := <-msgChannel:
+
 			if msg.CorrelationId == "" {
 				continue
 			}
 
-			replyMsg := &schema.ReplyMessage{
+			msgRply := &schemas.MessageReply{
 				CorrelationId: msg.CorrelationId,
 				Data:          string(msg.Body),
 				Headers:       msg.Headers,
 			}
+
 			err = msg.Ack(true)
 			if err != nil {
-				log.Printf("ERROR: Failed to ack message", err.Error())
+				log.Printf("ERROR: fail to ack: %s", err.Error())
 			}
 
-			// find waiting channel(with corr_id) and forward the reply to it
-			if replyChan, ok := ReplyChannels[replyMsg.CorrelationId]; ok {
-				replyChan <- *replyMsg
+			if rchan, ok := ReplyChannels[msgRply.CorrelationId]; ok {
+				rchan <- *msgRply
 			}
-
 		}
 	}
 }
