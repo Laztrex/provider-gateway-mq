@@ -6,9 +6,12 @@ import (
 )
 
 func (conn *RMQSpec) PublishConnecting() {
-
 	err := conn.Connect()
 	conn.OnError(err, "Failed to connect to RabbitMQ while publishing")
+}
+
+func (conn *RMQSpec) PublishDeclare() {
+	var err error
 
 	if conn.Exchange != "" {
 		err = conn.ExchangeDeclare()

@@ -28,6 +28,12 @@ func (conn *RMQSpec) ConsumeMessages() {
 
 	for {
 		select {
+		case err := <-conn.Err:
+			err = conn.Reconnect()
+			if err != nil {
+				panic(err)
+			}
+
 		case msg := <-msgChannel:
 
 			if msg.CorrelationId == "" {

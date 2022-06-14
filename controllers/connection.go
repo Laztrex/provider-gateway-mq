@@ -68,7 +68,6 @@ func (conn *RMQSpec) ExchangeDeclare() error {
 }
 
 func (conn *RMQSpec) QueueDeclare() error {
-	log.Print(conn.Queue)
 	_, err := conn.Channel.QueueDeclare(
 		conn.Queue, // name
 		false,      // durable

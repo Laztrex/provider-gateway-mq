@@ -3,7 +3,7 @@ package consts
 const EnvFile = ".env"
 const EnvFileDirectory = "."
 
-const QueueName = "ml360"
+const QueuesConf = "queue_config.yaml"
 
 const AnswerQueueName = "response"
 

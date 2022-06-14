@@ -25,27 +25,24 @@ func main() {
 	connectionString := utils.GetEnvVar("RMQ_URL")
 	exchange := utils.GetEnvVar("TOPIC")
 	routingKey := utils.GetEnvVar("ROUTING_KEY")
-	bindingKey := utils.GetEnvVar("BINDING_KEY")
-	queue := utils.GetEnvVar("QUEUE_NAME")
+
+	configs := utils.GetQueueConf()
 
 	rmqProducer := controllers.RMQSpec{
-		Queue:            queue,
 		ConnectionString: connectionString,
-		Exchange:         exchange,
 		RoutingKey:       routingKey,
-		BindingKey:       bindingKey,
 		Err:              make(chan error),
 	}
+	rmqProducer.PublishConnecting()
 
-	//rmqProducer2 := controllers.RMQSpec{
-	//	Queue:            "ml361",
-	//	ConnectionString: connectionString,
-	//	Exchange:         exchange,
-	//	RoutingKey:       routingKey,
-	//	BindingKey:       "*.metrics",
-	//	Err:              make(chan error),
-	//}
-	//rmqProducer2.PublishConnecting()
+	for _, conf := range configs {
+
+		rmqProducer.Queue = conf.QueueName
+		rmqProducer.BindingKey = conf.BindingKey
+		rmqProducer.Exchange = conf.Topic
+
+		rmqProducer.PublishDeclare()
+	}
 
 	rmqConsumer := controllers.RMQSpec{
 		Queue:            consts.AnswerQueueName,
@@ -54,8 +51,6 @@ func main() {
 		RoutingKey:       routingKey,
 		Err:              make(chan error),
 	}
-
-	rmqProducer.PublishConnecting()
 
 	go rmqProducer.PublishMessages()
 	go rmqConsumer.ConsumeMessages()
