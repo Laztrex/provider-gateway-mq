@@ -12,17 +12,16 @@ func RequestID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var requestId string
 
-		rqUID := c.Request.Header.Get(consts.RequestIdHttpHeaderName)
+		requestId = c.Request.Header.Get(consts.RequestIdHttpHeaderName)
 		c.Request.Header.Del(consts.RequestIdHttpHeaderName)
 
-		if rqUID != "" {
-			requestId = rqUID
-		} else {
+		if requestId == "" {
 			requestId = uuid.New().String()
 		}
+
 		// Set context variable
-		c.Set("RqUID", requestId)
-		c.Request.Header["RqUID"] = []string{requestId}
+		c.Set("requestId", requestId)
+		c.Request.Header[consts.RequestIdHttpHeaderName] = []string{requestId}
 
 		c.Next()
 	}

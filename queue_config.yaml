@@ -1,6 +1,6 @@
-- Topic: MEF.MQ
-  QueueName: ml360
+- Topic: ML.MQ
+  QueueName: fib
   BindingKey: "predict.*"
-- Topic: MEF.MQ
-  QueueName: ml361
+- Topic: ML.MQ
+  QueueName: manage
   BindingKey: "metrics.*"
