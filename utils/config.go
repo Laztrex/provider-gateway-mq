@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
+	"os"
 	"strconv"
 	"time"
 
@@ -19,6 +19,7 @@ type Config struct {
 	Topic      string `yaml:"Topic"`
 	QueueName  string `yaml:"QueueName"`
 	BindingKey string `yaml:"BindingKey"`
+	RoutingKey string `yaml:"RoutingKey"`
 }
 
 func init() {
@@ -37,15 +38,16 @@ func init() {
 func GetQueueConf() []Config {
 	var configs []Config
 
-	source, err := ioutil.ReadFile(consts.QueuesConf)
+	source, err := os.ReadFile(consts.QueuesConf)
 
 	if err != nil {
 		log.Debug().Msgf("failed reading config file: %v\n", err)
 
 		configs = append(configs, Config{
-			Topic:      "MEF.MQ",
+			Topic:      "ML.MQ",
 			QueueName:  "ml360",
-			BindingKey: "predict.*"})
+			BindingKey: "predict.*",
+			RoutingKey: ""})
 
 	} else {
 		err = yaml.Unmarshal(source, &configs)
@@ -71,7 +73,7 @@ func GetEnvVar(name string) string {
 }
 
 func GetTlsConf() *tls.Config {
-	caCert, err := ioutil.ReadFile(GetEnvVar("_CACERT"))
+	caCert, err := os.ReadFile(GetEnvVar("_CACERT"))
 	if err != nil {
 		log.Debug().Err(err).Msg("Failed to read CACert")
 	}

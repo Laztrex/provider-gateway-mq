@@ -12,6 +12,7 @@ import (
 )
 
 func init() {
+	// Set gin mode
 	mode := utils.GetEnvVar("GIN_MODE")
 	gin.SetMode(mode)
 }
@@ -21,25 +22,22 @@ func main() {
 	host := utils.GetEnvVar("GIN_ADDR")
 	port := utils.GetEnvVar("GIN_PORT")
 	https := utils.GetEnvVar("GIN_HTTPS")
-
 	connectionString := utils.GetEnvVar("RMQ_URL")
-	exchange := utils.GetEnvVar("TOPIC")
-	routingKey := utils.GetEnvVar("ROUTING_KEY")
 
 	configs := utils.GetQueueConf()
 
 	rmqProducer := controllers.RMQSpec{
 		ConnectionString: connectionString,
-		RoutingKey:       routingKey,
 		Err:              make(chan error),
 	}
-	rmqProducer.PublishConnecting()
+	rmqProducer.PublishConnector()
 
 	for _, conf := range configs {
 
+		rmqProducer.Exchange = conf.Topic
 		rmqProducer.Queue = conf.QueueName
 		rmqProducer.BindingKey = conf.BindingKey
-		rmqProducer.Exchange = conf.Topic
+		rmqProducer.RoutingKey = conf.RoutingKey
 
 		rmqProducer.PublishDeclare()
 	}
@@ -47,8 +45,6 @@ func main() {
 	rmqConsumer := controllers.RMQSpec{
 		Queue:            consts.AnswerQueueName,
 		ConnectionString: connectionString,
-		Exchange:         exchange,
-		RoutingKey:       routingKey,
 		Err:              make(chan error),
 	}
 

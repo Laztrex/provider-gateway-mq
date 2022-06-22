@@ -5,7 +5,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func (conn *RMQSpec) PublishConnecting() {
+func (conn *RMQSpec) PublishConnector() {
 	err := conn.Connect()
 	conn.OnError(err, "Failed to connect to RabbitMQ while publishing")
 }

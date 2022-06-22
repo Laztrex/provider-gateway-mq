@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 
