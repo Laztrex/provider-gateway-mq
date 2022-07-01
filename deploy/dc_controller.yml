@@ -1,7 +1,7 @@
 kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
-  name: provider-mq
+  name: provider-gateway-mq
   labels:
     app: mlx
     deploy: ml-provider-mq
@@ -34,9 +34,17 @@ spec:
           emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
-        - name: provider-mq-certs
+        - name: queue-config
+          configMap:
+            name: queue-config
+            items:
+              - key: queue_config.yaml
+                path: queue_config.yaml
+            defaultMode: 420
+            optional: false
+        - name: provider-gateway-mq-certs
           secret:
-            secretName: provider-mq-certs
+            secretName: provider-gateway-mq-certs
             items:
               - key: crt.pem
                 path: client_cert_mq.pem
@@ -142,9 +150,12 @@ spec:
               mountPath: /var/log
             - name: tmp-dir
               mountPath: /tmp/nginx
-            - name: provider-mq-certs
+            - name: provider-gateway-mq-certs
               readOnly: true
               mountPath: /certs/gateway_mq
+            - name: queue-config
+              mountPath: /go/src/controller-mq/queue_config.yaml
+              subPath: queue_config.yaml
           terminationMessagePolicy: File
           image: >-
             $(IMAGE)

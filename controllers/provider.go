@@ -40,7 +40,6 @@ func Provider(c *gin.Context) {
 		CorrelationId: utils.GetCorrelationId(),
 		Body:          msg,
 		Headers:       headers,
-		ReplyTo:       consts.AnswerQueueName,
 		RoutingKey:    c.Request.Header.Get("routing-key"),
 	}
 

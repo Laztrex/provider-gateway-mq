@@ -16,10 +16,11 @@ import (
 )
 
 type Config struct {
-	Topic      string `yaml:"Topic"`
-	QueueName  string `yaml:"QueueName"`
-	BindingKey string `yaml:"BindingKey"`
-	RoutingKey string `yaml:"RoutingKey"`
+	Topic      string `yaml:"topic"`
+	QueueName  string `yaml:"queueName"`
+	BindingKey string `yaml:"bindingKey"`
+	RoutingKey string `yaml:"routingKey"`
+	ReplyTo    string `yaml:"replyTo"`
 }
 
 func init() {
@@ -47,7 +48,8 @@ func GetQueueConf() []Config {
 			Topic:      "ML.MQ",
 			QueueName:  "ml360",
 			BindingKey: "predict.*",
-			RoutingKey: ""})
+			RoutingKey: "",
+			ReplyTo:    "response"})
 
 	} else {
 		err = yaml.Unmarshal(source, &configs)

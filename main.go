@@ -6,7 +6,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"provider_gateway_mq/app"
-	"provider_gateway_mq/consts"
 	"provider_gateway_mq/controllers"
 	"provider_gateway_mq/utils"
 )
@@ -18,6 +17,7 @@ func init() {
 }
 
 func main() {
+	// Setup the app gateway
 
 	host := utils.GetEnvVar("GIN_ADDR")
 	port := utils.GetEnvVar("GIN_PORT")
@@ -30,7 +30,21 @@ func main() {
 		ConnectionString: connectionString,
 		Err:              make(chan error),
 	}
-	rmqProducer.PublishConnector()
+
+	rmqConsumer := controllers.RMQSpec{
+		ConnectionString: connectionString,
+		Err:              make(chan error),
+	}
+
+	err := rmqProducer.Connect()
+	if err != nil {
+		rmqProducer.OnError(err, "Failed to connect to RabbitMQ while publishing")
+	}
+
+	err = rmqConsumer.Connect()
+	if err != nil {
+		rmqConsumer.OnError(err, "Failed to declare a queue while consuming")
+	}
 
 	for _, conf := range configs {
 
@@ -38,14 +52,12 @@ func main() {
 		rmqProducer.Queue = conf.QueueName
 		rmqProducer.BindingKey = conf.BindingKey
 		rmqProducer.RoutingKey = conf.RoutingKey
+		rmqProducer.ReplyTo = conf.ReplyTo
+
+		rmqConsumer.Queue = conf.ReplyTo
 
 		rmqProducer.PublishDeclare()
-	}
-
-	rmqConsumer := controllers.RMQSpec{
-		Queue:            consts.AnswerQueueName,
-		ConnectionString: connectionString,
-		Err:              make(chan error),
+		rmqConsumer.ConsumeDeclare()
 	}
 
 	go rmqProducer.PublishMessages()

@@ -38,17 +38,17 @@ spec:
       containers:
         - resources:
             limits:
-              cpu: '3'
-              memory: 4000Mi
-            requests:
               cpu: '2'
               memory: 2000Mi
+            requests:
+              cpu: '1'
+              memory: 1000Mi
           readinessProbe:
             httpGet:
               path: /health
               port: 8080
               scheme: HTTP
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             timeoutSeconds: 1
             periodSeconds: 500
             successThreshold: 1
@@ -104,7 +104,7 @@ spec:
                   name: rabbitmq-user
                   key: pass
             - name: QUEUE_NAME
-              value: ml360
+              value: fib
           securityContext:
             readOnlyRootFilesystem: false
           ports:
@@ -138,7 +138,7 @@ spec:
             defaultMode: 288
         - name: mq-certs
           secret:
-            secretName: ml-ml-mq-certs
+            secretName: mlx-rabbitmq-mq-certs
             items:
               - key: crt
                 path: crt.pem

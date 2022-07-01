@@ -6,14 +6,14 @@ import (
 	"provider_gateway_mq/schemas"
 )
 
-func (conn *RMQSpec) ConsumeMessages() {
-	// conn
+func (conn *RMQSpec) ConsumeDeclare() {
 
-	err := conn.Connect()
-	conn.OnError(err, "Failed to connect to RabbitMQ while consuming")
-
-	err = conn.QueueDeclare()
+	err := conn.QueueDeclare()
 	conn.OnError(err, "Failed to declare a queue while consuming")
+
+}
+
+func (conn *RMQSpec) ConsumeMessages() {
 
 	msgChannel, err := conn.Channel.Consume(
 		conn.Queue, // queue

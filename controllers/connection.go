@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"fmt"
-
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 
@@ -18,6 +17,7 @@ type RMQSpec struct {
 	Exchange         string
 	RoutingKey       string
 	BindingKey       string
+	ReplyTo          string
 	Err              chan error
 }
 

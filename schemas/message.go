@@ -13,7 +13,6 @@ type MessageCreate struct {
 	CorrelationId string
 	Body          MessageRequest `json:"data"`
 	Headers       amqp.Table
-	ReplyTo       string
 	RoutingKey    string
 }
 

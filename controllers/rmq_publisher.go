@@ -5,11 +5,6 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func (conn *RMQSpec) PublishConnector() {
-	err := conn.Connect()
-	conn.OnError(err, "Failed to connect to RabbitMQ while publishing")
-}
-
 func (conn *RMQSpec) PublishDeclare() {
 	var err error
 
@@ -49,7 +44,7 @@ func (conn *RMQSpec) PublishMessages() {
 					Body:          []byte(msg.Body.Message),
 					Headers:       msg.Headers,
 					CorrelationId: msg.CorrelationId,
-					ReplyTo:       msg.ReplyTo,
+					ReplyTo:       conn.ReplyTo,
 				},
 			)
 			if err != nil {

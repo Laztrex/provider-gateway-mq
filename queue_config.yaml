@@ -1,6 +1,8 @@
-- Topic: ML.MQ
-  QueueName: fib
-  BindingKey: "predict.*"
-- Topic: ML.MQ
-  QueueName: manage
-  BindingKey: "metrics.*"
+- topic: MEF.MQ
+  queueName: ml360
+  bindingKey: "predict.*"
+  replyTo: "response"
+- topic: MEF.MQ
+  queueName: ml361
+  bindingKey: "metrics.*"
+  replyTo: "response"
