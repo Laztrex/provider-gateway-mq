@@ -8,7 +8,7 @@ The steps in this document assume that you have access to an OpenShift deploymen
 The project is part of a cloud-based microservice solution for interacting with an ML-application and related infrastructure components.  
 The *Provider-gateway-mq* controller is the link for the interaction between the Initiator and the ML model.
 
-![Image alt](https://github.com/Laztrex/provider-gateway-mq/master/docs/pics/sketch_gateway_mq.png)
+![Image alt](https://github.com/Laztrex/provider-gateway-mq/blob/main/docs/pics/first-sketch.png)
 
 
 Naturally, for more reliable and stable operation, it is necessary to provide Envoy Proxy connection, as well as Service Mesh concept services for traffic control and monitoring.  
@@ -97,7 +97,7 @@ This example is just a demonstration.
     oc process -f conf/dc-mlx.yml --ignore-unknown-parameters --param-file="templates/template_mlx.env" | oc apply -f -
     ~~~
 
-![Image alt](https://github.com/Laztrex/provider-gateway-mq/master/docs/pics/pods.png)
+![Image alt](https://github.com/Laztrex/provider-gateway-mq/blob/main/docs/pics/pods.png)
 
 > Fluentd sidecar is omitted from these sample config files.
 

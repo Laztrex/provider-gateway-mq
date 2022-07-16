@@ -89,9 +89,6 @@ docker-compose logs -f -t
 The goal of the project is to create binding services for the ML model that provide ease of interaction, flexible logic,
 scalability of connecting various interfaces of the ML Engine architecture - *Cloud-based Sandbox for ML Serving*
 
-Simplified sketch  
-![Image alt](https://github.com/Laztrex/provider-gateway-mq/master/docs/pics/first-sketch.png)
-
 ## Addition
 
 It is implied in the microservice architecture of a cloud solution for calculating ML models:
