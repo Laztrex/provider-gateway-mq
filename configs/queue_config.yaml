@@ -1,0 +1,8 @@
+- topic: ML.MQ
+  queueName: fib
+  bindingKey: "predict.*"
+  replyTo: "response"
+- topic: ML.MQ
+  queueName: manage
+  bindingKey: "metrics.*"
+  replyTo: "response"

@@ -1,4 +1,4 @@
-module provider_gateway_mq
+module gateway_mq
 
 go 1.18
 

@@ -1,8 +1,0 @@
-- topic: MEF.MQ
-  queueName: ml360
-  bindingKey: "predict.*"
-  replyTo: "response"
-- topic: MEF.MQ
-  queueName: ml361
-  bindingKey: "metrics.*"
-  replyTo: "response"

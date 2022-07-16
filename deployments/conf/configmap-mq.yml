@@ -1,0 +1,14 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: queue-config
+data:
+  queue_config.yaml: |
+    - Topic: ML.MQ
+      QueueName: fib
+      BindingKey: "predict.*"
+      replyTo: "response"
+    - Topic: ML.MQ
+      QueueName: manage
+      BindingKey: "metrics.*"
+      replyTo: "response"
