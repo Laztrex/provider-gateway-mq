@@ -9,7 +9,7 @@ def mq_handler(fn):
         incoming_msg = MQMessage(data=message.body)
         incoming_headers = MQHeaders(request_headers=message.headers)
 
-        RqUID = incoming_headers.get('RqUID')
+        RqUID = incoming_headers.get('request-id')
         content_type = incoming_headers.get('Content-Type')
         incoming_msg.correlation_id = message.correlation_id
         incoming_msg.reply_to = message.reply_to

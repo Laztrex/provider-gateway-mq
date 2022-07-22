@@ -20,7 +20,7 @@ func Provider(c *gin.Context) {
 	requestId := c.GetString(requestIdHeaderName)
 
 	if binderr := c.ShouldBindJSON(&msg); binderr != nil {
-		log.Error().Err(binderr).Str("request_id", requestId).
+		log.Error().Err(binderr).Str(requestIdHeaderName, requestId).
 			Msg("Error occurred while binding request data")
 
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
