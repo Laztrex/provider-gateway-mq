@@ -43,7 +43,7 @@ The project uses global environment variables.
 
 You can define the default values in the **.env** file of the project root.
 
-Configuration file is also provided to define protocol settings - [queue_config.yml](https://github.com/Laztrex/provider-gateway-mq/blob/main/internal/configs/)
+Configuration file is also provided to define protocol settings - [queue_config.yml](https://github.com/Laztrex/provider-gateway-mq/blob/main/configs/)
 
 ~~~yaml
 - topic: ML.MQ
