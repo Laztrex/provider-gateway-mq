@@ -43,7 +43,7 @@ The project uses global environment variables.
 
 You can define the default values in the **.env** file of the project root.
 
-Configuration file is also provided to define protocol settings - [queue_config.yml](https://github.com/Laztrex/provider-gateway-mq/master/internal/configs/)
+Configuration file is also provided to define protocol settings - [queue_config.yml](https://github.com/Laztrex/provider-gateway-mq/blob/main/internal/configs/)
 
 ~~~yaml
 - topic: ML.MQ
@@ -55,7 +55,7 @@ Configuration file is also provided to define protocol settings - [queue_config.
 Currently, only Topic can be defined from the configuration file for Exchange (but Direct can also be defined). Other exchanges - will be supplemented.
 Flexible settings for the queue - lifetime, autodelete, types, arguments and etc. currently not included in the configuration file, the parameters can be configured inside the code optionally.  
 
-The directory [examples/webapp](https://github.com/Laztrex/provider-gateway-mq/master/examples/webapp/) contains a simple web application for testing the project.
+The directory [examples/webapp](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/webapp/) contains a simple web application for testing the project.
 
 ~~~
 >> go version
@@ -106,7 +106,7 @@ It is implied in the microservice architecture of a cloud solution for calculati
 In this project, we are going to create a Golang web client to connect to RabbitMQ server with TLS. For this we
 you will need to create self-signed SSL certificates and share them between the Golang application and the RabbitMQ server.
 
-Directory [examples/certs](https://github.com/Laztrex/provider-gateway-mq/master/examples/certs/) contains a Dockerfile with an example of generating a self-signed certificate.
+Directory [examples/certs](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/certs/) contains a Dockerfile with an example of generating a self-signed certificate.
 
 ~~~
 cd examples/certs/
@@ -119,7 +119,7 @@ docker run -i -t certs bash
 >> cd /tls-gen/basic/result
 ~~~
 
-Add certificate files to directory [examples/certs](https://github.com/Laztrex/provider-gateway-mq/master/examples/certs/). Initially set certificate structure:
+Add certificate files to directory [examples/certs](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/certs/). Initially set certificate structure:
 
 ~~~
 ├── examples  
@@ -144,7 +144,7 @@ It is also necessary to provide for the creation of certificates for the *gin*-s
 ### Initial setup RabbitMQ
 
 When initializing the RabbitMQ client, you can set initial settings.  
-In particular, you can set available accounts and define a configuration file. See example in [examples/rabbit-mq](https://github.com/Laztrex/provider-gateway-mq/master/examples/rabbit-mq/).  
+In particular, you can set available accounts and define a configuration file. See example in [examples/rabbit-mq](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/rabbit-mq/).  
 
 Check the list of available users:
 
