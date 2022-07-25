@@ -12,13 +12,19 @@ import (
 type RMQSpec struct {
 	Connection       *amqp.Connection
 	Channel          *amqp.Channel
-	Err              chan error
 	Queue            string
 	ConnectionString string
 	Exchange         string
 	RoutingKey       string
 	BindingKey       string
 	ReplyTo          string
+	Err              chan error
+	Args             RMQArgs
+}
+
+type RMQArgs struct {
+	Topic amqp.Table
+	Queue amqp.Table
 }
 
 func (conn RMQSpec) OnError(err error, msg string) {
@@ -69,12 +75,12 @@ func (conn *RMQSpec) ExchangeDeclare() error {
 
 func (conn *RMQSpec) QueueDeclare() error {
 	_, err := conn.Channel.QueueDeclare(
-		conn.Queue, // name
-		false,      // durable
-		false,      // delete when unused
-		false,      // exclusive
-		false,      // no-wait
-		nil,        // arguments
+		conn.Queue,      // name
+		false,           // durable
+		false,           // delete when unused
+		false,           // exclusive
+		false,           // no-wait
+		conn.Args.Queue, // arguments
 	)
 	if err != nil {
 		return fmt.Errorf("error in declaring the queue %s", err)

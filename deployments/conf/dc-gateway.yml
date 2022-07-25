@@ -9,7 +9,7 @@ objects:
       name: provider-gateway-mq
       labels:
         app: mlx
-        deploy: ml-provider-mq
+        deploy: mlx-provider-mq
     spec:
       strategy:
         type: Rolling

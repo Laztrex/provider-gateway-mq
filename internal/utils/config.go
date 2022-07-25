@@ -4,23 +4,24 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
+	"github.com/streadway/amqp"
 	"gopkg.in/yaml.v2"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
-
 	"gateway_mq/internal/consts"
 )
 
 type Config struct {
-	Topic      string `yaml:"topic"`
-	QueueName  string `yaml:"queueName"`
-	BindingKey string `yaml:"bindingKey"`
-	RoutingKey string `yaml:"routingKey"`
-	ReplyTo    string `yaml:"replyTo"`
+	QueueName  string     `yaml:"queueName"`
+	ReplyTo    string     `yaml:"replyTo"`
+	Topic      string     `yaml:"topic" default:""`
+	BindingKey string     `yaml:"bindingKey" default:""`
+	DLE        bool       `yaml:"dle" default:"false"`
+	ArgsQueue  amqp.Table `yaml:"argQueue"`
 }
 
 func init() {
@@ -48,7 +49,6 @@ func GetQueueConf() []Config {
 			Topic:      "ML.MQ",
 			QueueName:  "fib",
 			BindingKey: "predict.*",
-			RoutingKey: "",
 			ReplyTo:    "response"})
 
 	} else {

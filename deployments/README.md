@@ -61,11 +61,11 @@ This example is just a demonstration.
     ~~~
   - Service for external applications with RabbitMQ, incl. using the admin panel
     ~~~
-    oc create -f conf/service.yml
+    oc create -f conf/service-rabbitmq.yml
     ~~~
   - Service for ML-application
     ~~~
-    oc create -f conf/service-mlx.yml
+    oc create -f conf/service-ml.yml
     ~~~
 
 * Configuration
@@ -89,7 +89,7 @@ This example is just a demonstration.
 
   - Deploying the *Gateway-MQ* Application
     ~~~
-    oc process -f conf/dc_gateway.yml --ignore-unknown-parameters --param-file="templates/template_mlx.env" | oc apply -f -
+    oc process -f conf/dc-gateway.yml --ignore-unknown-parameters --param-file="templates/template_mlx.env" | oc apply -f -
     ~~~
 
   - Deploying ML Application

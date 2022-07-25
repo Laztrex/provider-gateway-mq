@@ -53,8 +53,8 @@ func main() {
 		rmqProducer.Exchange = conf.Topic
 		rmqProducer.Queue = conf.QueueName
 		rmqProducer.BindingKey = conf.BindingKey
-		rmqProducer.RoutingKey = conf.RoutingKey
 		rmqProducer.ReplyTo = conf.ReplyTo
+		rmqProducer.Args.Queue = conf.ArgsQueue
 
 		rmqConsumer.Queue = conf.ReplyTo
 
