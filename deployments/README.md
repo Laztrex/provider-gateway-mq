@@ -14,6 +14,8 @@ The *Provider-gateway-mq* controller is the link for the interaction between the
 Naturally, for more reliable and stable operation, it is necessary to provide Envoy Proxy connection, as well as Service Mesh concept services for traffic control and monitoring.  
 This example is just a demonstration.
 
+You can use [provider-mq](https://github.com/Laztrex/provider-mq) as queue consumer
+
 ## Deployment steps
 
 * Set roles and access rights (taken from the [example](https://kubernetes.io/docs/reference/access-authn-authz/rbac/))

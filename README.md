@@ -1,7 +1,7 @@
 # Provider-gateway-mq
 
 The project is part of a cloud-based microservice solution for interacting with an ML-application and related
-infrastructure components.  
+infrastructure components.
 
 This application allows the Initiator to communicate with the model through the RabbitMQ client in the cluster
 project.    
@@ -10,10 +10,12 @@ model using the RPC-pattern.
 
 ## Description
 
-*Prover-gateway-mq* currently implements the following:
+*Provider-gateway-mq* currently implements the following:
 
 * REST request
 * Application arranges sync/async RPC calls with the model
+* The routing path to publish to the queue must be contained in the "routing_key" header. Also, the gateway-mq configuration settings provide for setting a fixed value of "routing_key"
+* When the model needs to transmit the result of its work, it turns to another (Reply) queue to transmit the gateway-mq response and sends a message with the result of the work there
 * Response from the model (sync)
     * If the pod with the model crashes before being called or during the calculation - the message will not be lost
       under certain conditions
@@ -23,27 +25,48 @@ model using the RPC-pattern.
 
 The project will be updated.
 
+Tested on
+~~~
+>> go version
+go version go1.17.2 darwin/amd64
+~~~
+~~~
+>> rabbitmqctl version
+3.10.6
+~~~
+
 ## Usage
 
-The project uses global environment variables.
+The project uses global *environment variables*
 
-| Name         |           Goal           |         Expected value example         |
+| Env Name     |           Goal           |         Expected value example         |
 |--------------|:------------------------:|:--------------------------------------:|
 | RMQ_URL      | Host to connect RabbitMQ | "amqps://user:password@rabbitmq:5671/" |
-| MQ_CACERT    |            CA            |   "/certs/gateway_mq/cacert_mq.pem"    |
-| MQ_CERT      |       Certificate        | "/certs/gateway_mq/client_cert_mq.pem" |
-| MQ_KEY       |     Key certificate      | "/certs/gateway_mq/client_key_mq.pem"  |
-| GIN_CERT     |    Server certificate    |  "/certs/gateway_mq/server_cert.pem"   |
-| GIN_CERT_KEY |        Server key        |   "/certs/gateway_mq/server_key.pem"   |
 | GIN_MODE     |          label           |               "release"                |
 | GIN_HTTPS    |         TLS mode         |                 "true"                 |
 | GIN_ADDR     |           Host           |               "0.0.0.0"                |
 | GIN_PORT     |           Port           |                 "5050"                 |
 | LOG_LEVEL    |      Logging level       |                   "debug"                   |
 
+and *constants*.
+
+| Const Name              |                Goal                |         Expected value example         |
+|-------------------------|:----------------------------------:|:--------------------------------------:|
+| MqCACERT                |                 CA                 |   "/certs/gateway_mq/cacert_mq.pem"    |
+| MqCERT                  |            Certificate             | "/certs/gateway_mq/client_cert_mq.pem" |
+| MqKEY                   |          Key certificate           | "/certs/gateway_mq/client_key_mq.pem"  |
+| GinCert                 |         Server certificate         |  "/certs/gateway_mq/server_cert.pem"   |
+| GinCertKey              |             Server key             |   "/certs/gateway_mq/server_key.pem"   |
+| EnvFile                 |     Local env file in project      | ".env"  |
+| EnvFileDirectory        |            Dir env file            |  "."   |
+| QueuesConf              | Path to configration Queue declare |   "configs/queue_config.yaml"   |
+| RequestIdHttpHeaderName |    Name Header for *request-id*    | ".env"  |
+| LogPath                 |         Path to dump logs          |   "/var/log/metrics.log"   |
+
 You can define the default values in the **.env** file of the project root.
 
-Configuration file is also provided to define protocol settings - [queue_config.yml](https://github.com/Laztrex/provider-gateway-mq/blob/main/configs/)
+Configuration file is also provided to define protocol settings
+- [queue_config.yml](https://github.com/Laztrex/provider-gateway-mq/blob/main/configs/)
 
 ~~~yaml
 - topic: ML.MQ
@@ -52,10 +75,12 @@ Configuration file is also provided to define protocol settings - [queue_config.
   replyTo: "response"
 ~~~
 
-Currently, only Topic can be defined from the configuration file for Exchange (but Direct can also be defined). Other exchanges - will be supplemented.
-Flexible settings for the queue - lifetime, autodelete, types, arguments and etc. currently not included in the configuration file, the parameters can be configured inside the code optionally.  
+Currently, only Topic can be defined from the configuration file for Exchange (but Direct can also be defined). Other
+exchanges - will be supplemented. Flexible settings for the queue - lifetime, autodelete, types, arguments and etc.
+currently not included in the configuration file, the parameters can be configured inside the code optionally.
 
-The directory [examples/webapp](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/webapp/) contains a simple web application for testing the project.
+The directory [examples/webapp](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/webapp/) contains a
+simple web application for testing the project.
 
 ~~~
 >> go version
@@ -103,23 +128,28 @@ It is implied in the microservice architecture of a cloud solution for calculati
 
 ### Certificates
 
-In this project, we are going to create a Golang web client to connect to RabbitMQ server with TLS. For this we
-you will need to create self-signed SSL certificates and share them between the Golang application and the RabbitMQ server.
+In this project, we are going to create a Golang web client to connect to RabbitMQ server with TLS. For this we you will
+need to create self-signed SSL certificates and share them between the Golang application and the RabbitMQ server.
 
-Directory [examples/certs](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/certs/) contains a Dockerfile with an example of generating a self-signed certificate.
+Directory [examples/certs](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/certs/) contains a
+Dockerfile with an example of generating a self-signed certificate.
 
 ~~~
 cd examples/certs/
 ~~~
+
 ~~~
 docker build -t certs .
 ~~~
+
 ~~~
 docker run -i -t certs bash
 >> cd /tls-gen/basic/result
 ~~~
 
-Add certificate files to directory [examples/certs](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/certs/). Initially set certificate structure:
+Add certificate files to
+directory [examples/certs](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/certs/). Initially set
+certificate structure:
 
 ~~~
 ├── examples  
@@ -144,7 +174,8 @@ It is also necessary to provide for the creation of certificates for the *gin*-s
 ### Initial setup RabbitMQ
 
 When initializing the RabbitMQ client, you can set initial settings.  
-In particular, you can set available accounts and define a configuration file. See example in [examples/rabbit-mq](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/rabbit-mq/).  
+In particular, you can set available accounts and define a configuration file. See example
+in [examples/rabbit-mq](https://github.com/Laztrex/provider-gateway-mq/blob/main/examples/rabbit-mq/).
 
 Check the list of available users:
 

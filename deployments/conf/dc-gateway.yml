@@ -123,16 +123,6 @@ objects:
                   # amqps://$(MQ_ADMIN_USER):$(MQ_ADMIN_PASS)@rabbitmq-headless.$(PROJECT_NAME).svc.cluster.local:5671/
                   value: >-
                     amqps://$(MQ_ADMIN_USER):$(MQ_ADMIN_PASS)@${RMQ_HOST}:5671/
-                - name: GIN_CERT
-                  value: /certs/gateway_mq/server_cert.pem
-                - name: GIN_CERT_KEY
-                  value: /certs/gateway_mq/server_key.pem
-                - name: MQ_CACERT
-                  value: /certs/gateway_mq/cacert_mq.pem
-                - name: MQ_CERT
-                  value: /certs/gateway_mq/client_cert_mq.pem
-                - name: MQ_KEY
-                  value: /certs/gateway_mq/client_key_mq.pem
               securityContext:
                 readOnlyRootFilesystem: false
               ports:

@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"gateway_mq/internal/app"
+	"gateway_mq/internal/consts"
 	"gateway_mq/internal/controllers"
 	"gateway_mq/internal/utils"
 )
@@ -68,8 +69,8 @@ func main() {
 	appApiGateway := app.SetupApp()
 
 	if https == "true" {
-		certFile := utils.GetEnvVar("GIN_CERT")
-		certKey := utils.GetEnvVar("GIN_CERT_KEY")
+		certFile := consts.GinCert
+		certKey := consts.GinCertKey
 		log.Info().Msgf("Starting service on https://%s:%s", host, port)
 
 		if err := appApiGateway.RunTLS(fmt.Sprintf("%s:%s", host, port), certFile, certKey); err != nil {

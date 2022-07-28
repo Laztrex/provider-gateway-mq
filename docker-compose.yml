@@ -41,13 +41,7 @@ services:
       GIN_PORT: "5050"
       LOG_LEVEL: "debug"
 
-      GIN_CERT: "/certs/gateway_mq/server_cert.pem"
-      GIN_CERT_KEY: "/certs/gateway_mq/server_key.pem"
-
       RMQ_URL: "amqps://superuser:superpassword@rabbitmq:5671/"
-      MQ_CACERT: "/certs/gateway_mq/cacert_mq.pem"
-      MQ_CERT: "/certs/gateway_mq/client_cert_mq.pem"
-      MQ_KEY: "/certs/gateway_mq/client_key_mq.pem"
 
     volumes:
       - "./examples/certs/gateway_mq:/certs/gateway_mq:ro"
