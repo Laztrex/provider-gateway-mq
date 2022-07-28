@@ -9,7 +9,7 @@ objects:
       name: provider-gateway-mq
       labels:
         app: mlx
-        deploy: mlx-provider-mq
+        deploy: mlx-provider-gateway-mq
     spec:
       strategy:
         type: Rolling
@@ -27,12 +27,12 @@ objects:
       revisionHistoryLimit: 10
       test: false
       selector:
-        deploy: mlx-provider-mq
+        deploy: mlx-provider-gateway-mq
       template:
         metadata:
           creationTimestamp: null
           labels:
-            deploy: mlx-provider-mq
+            deploy: mlx-provider-gateway-mq
         spec:
           volumes:
             - name: ml-log
@@ -64,17 +64,6 @@ objects:
                   - key: trusted_crt.pem
                     path: trusted_crt.pem
                 defaultMode: 288
-            - name: gin-certs
-              secret:
-                secretName: gin-certs
-                items:
-                  - key: crt.pem
-                    path: server_cert.pem
-                  - key: key.pem
-                    path: server_key.pem
-                  - key: trusted_crt.pem
-                    path: trusted_crt.pem
-                defaultMode: 288
           containers:
             - resources:
                 limits:
@@ -94,7 +83,7 @@ objects:
                 successThreshold: 1
                 failureThreshold: 3
               terminationMessagePath: /dev/termination-log
-              name: provider-mq
+              name: gateway-mq
               livenessProbe:
                 httpGet:
                   path: /health
@@ -107,7 +96,7 @@ objects:
                 failureThreshold: 10
               env:
                 - name: APPLICATION_NAME
-                  value: provider-mq
+                  value: gateway-mq
                 - name: PROJECT_NAME
                   value: testing
                 - name: GIN_MODE
@@ -138,12 +127,12 @@ objects:
                   value: /certs/gateway_mq/server_cert.pem
                 - name: GIN_CERT_KEY
                   value: /certs/gateway_mq/server_key.pem
-                - name: TOPIC
-                  value: ML.MQ
-                - name: QUEUE_NAME
-                  value: fib
-                - name: BINDING_KEY
-                  value: predict.*
+                - name: MQ_CACERT
+                  value: /certs/gateway_mq/cacert_mq.pem
+                - name: MQ_CERT
+                  value: /certs/gateway_mq/client_cert_mq.pem
+                - name: MQ_KEY
+                  value: /certs/gateway_mq/client_key_mq.pem
               securityContext:
                 readOnlyRootFilesystem: false
               ports:
@@ -160,7 +149,7 @@ objects:
                   readOnly: true
                   mountPath: /certs/gateway_mq
                 - name: queue-config
-                  mountPath: /go/src/controller-mq/configs/queue_config.yaml
+                  mountPath: /go/src/gateway_mq/configs/queue_config.yaml
                   subPath: queue_config.yaml
               terminationMessagePolicy: File
               image: >-

@@ -153,3 +153,7 @@ parameters:
     required: true
   - name: RMQ_HOST
     required: true
+  - name: NAME_PROJECT
+    required: true
+  - name: NAME_MODEL
+    required: true

@@ -49,7 +49,7 @@ This example is just a demonstration.
 * Persistent storage
   If the RabbitMQ configuration is set in the StatefulSet in the project, then it is worth providing persistent storage
   
-* Сервисы
+* Services
 
   - Create a *headless*-service for the Peer Discovery plugin (for StatefulSets application)
     ~~~
@@ -57,7 +57,7 @@ This example is just a demonstration.
     ~~~
   - Create a Service for external access to Gateway-mq
     ~~~
-    oc create -f conf/service-provider-mq.yml
+    oc create -f conf/service-gateway-mq.yml
     ~~~
   - Service for external applications with RabbitMQ, incl. using the admin panel
     ~~~
