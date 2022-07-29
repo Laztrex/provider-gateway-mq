@@ -28,7 +28,7 @@ services:
     build: .
     container_name: controller-mq
     ports:
-      - "127.0.0.1:8080:5050" # Port to access our REST API
+      - "127.0.0.1:5050:5050" # Port to access our REST API
     networks:
       - rabbitmq-example
     depends_on:
