@@ -1,11 +1,17 @@
 - topic: ML.MQ
-  queueName: fib
-  bindingKey: "predict.*"
-  replyTo: "response"
+  queueName: ML.FIB.IN
+  bindingKey: "predict.mlx.*"
+  replyTo: ML.FIB.OUT
+  dle: true
+  dleParams: {
+    dleExchange: dead_letter_exchange,
+    dleExchangeType: fanout,
+    dleQueue: dead_letter_queue,
+    dleArgs: {
+      x-message-ttl: 60000,
+      x-dead-letter-exchange: ML.MQ,
+    }
+  }
   argQueue: {
     "x-dead-letter-exchange": dead_letter_exchange,
   }
-- topic: ML.MQ
-  queueName: manage
-  bindingKey: "metrics.*"
-  replyTo: "response"
