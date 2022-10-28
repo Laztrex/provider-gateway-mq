@@ -19,7 +19,7 @@ func Provider(c *gin.Context) {
 	requestIdHeaderName := consts.RequestIdHttpHeaderName
 	requestId := c.GetString(requestIdHeaderName)
 
-	if binderr := c.ShouldBindJSON(&msg); binderr != nil {
+	if binderr := c.ShouldBindJSON(&msg.Message); binderr != nil {
 		log.Error().Err(binderr).Str(requestIdHeaderName, requestId).
 			Msg("Error occurred while binding request data")
 

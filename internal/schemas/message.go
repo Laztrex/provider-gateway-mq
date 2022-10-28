@@ -6,12 +6,12 @@ import (
 
 // MessageRequest Message is RequestBody from AC
 type MessageRequest struct {
-	Message string `json:"data" binding:"required"`
+	Message map[string]interface{}
 }
 
 type MessageCreate struct {
 	CorrelationId string
-	Body          MessageRequest `json:"data"`
+	Body          MessageRequest
 	Headers       amqp.Table
 	RoutingKey    string
 }

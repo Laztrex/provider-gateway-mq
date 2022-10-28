@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
 )
@@ -33,7 +34,10 @@ func (conn *RMQSpec) PublishMessages() {
 			}
 
 		case msg := <-PublishChannels:
-			err := conn.Channel.Publish(
+			log.Printf("PRODUCE: %s", conn.Queue)
+
+			body, err := json.Marshal(msg.Body.Message)
+			err = conn.Channel.Publish(
 				conn.Exchange, // exchange
 				//conn.RoutingKey, // routing key
 				msg.RoutingKey,
@@ -41,7 +45,7 @@ func (conn *RMQSpec) PublishMessages() {
 				false, // immediate
 				amqp.Publishing{
 					ContentType:   "application/json",
-					Body:          []byte(msg.Body.Message),
+					Body:          body,
 					Headers:       msg.Headers,
 					CorrelationId: msg.CorrelationId,
 					ReplyTo:       conn.ReplyTo,
