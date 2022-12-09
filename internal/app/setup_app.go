@@ -5,7 +5,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"gateway_mq/internal/middlewares"
-	"gateway_mq/internal/routers"
+	"gateway_mq/internal/transport"
 )
 
 // SetupApp Function to setup the app object
@@ -21,7 +21,7 @@ func SetupApp() *gin.Engine {
 	app.Use(middlewares.CORSMiddleware(), middlewares.RequestID(), middlewares.RequestLogger())
 
 	log.Info().Msg("Setting up routers")
-	routers.SetupRouters(app)
+	transport.SetupRouters(app)
 
 	return app
 }

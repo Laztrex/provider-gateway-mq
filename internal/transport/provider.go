@@ -1,6 +1,7 @@
-package controllers
+package transport
 
 import (
+	"gateway_mq/internal/controllers"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
@@ -44,9 +45,9 @@ func Provider(c *gin.Context) {
 	}
 
 	replyChannel := make(chan schemas.MessageReply)
-	ReplyChannels[msgCreate.CorrelationId] = replyChannel
+	controllers.ReplyChannels[msgCreate.CorrelationId] = replyChannel
 
-	PublishChannels <- *msgCreate
+	controllers.PublishChannels <- *msgCreate
 
 	waitReply(msgCreate.CorrelationId, replyChannel, c.Writer) //, w http.ResponseWriter
 
@@ -67,7 +68,7 @@ func waitReply(correlationId string, replyChannel chan schemas.MessageReply, w g
 
 			response(w, msgReply.Data, 200)
 
-			delete(ReplyChannels, correlationId)
+			delete(controllers.ReplyChannels, correlationId)
 			return
 
 		case <-time.After(90 * time.Second):
@@ -76,7 +77,7 @@ func waitReply(correlationId string, replyChannel chan schemas.MessageReply, w g
 
 			response(w, "Timeout", 408)
 
-			delete(ReplyChannels, correlationId)
+			delete(controllers.ReplyChannels, correlationId)
 			return
 		}
 	}
