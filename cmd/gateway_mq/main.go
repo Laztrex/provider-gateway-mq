@@ -29,7 +29,8 @@ func main() {
 
 	rmqProducer := controllers.RMQSpec{
 		ConnectionString: connectionString,
-		Err:              make(chan error),
+
+		Err: make(chan error),
 	}
 
 	rmqConsumer := controllers.RMQSpec{
@@ -69,8 +70,16 @@ func main() {
 	appApiGateway := app.SetupApp()
 
 	if https == "true" {
-		certFile := consts.GinCert
-		certKey := consts.GinCertKey
+		certFile := utils.GetEnvVar("GIN_CERT")
+		if certFile == "" {
+			certFile = consts.GinCertDefault
+		}
+
+		certKey := utils.GetEnvVar("GIN_KEY")
+		if certKey == "" {
+			certKey = consts.GinCertKeyDefault
+		}
+
 		log.Info().Msgf("Starting service on https://%s:%s", host, port)
 
 		if err := appApiGateway.RunTLS(fmt.Sprintf("%s:%s", host, port), certFile, certKey); err != nil {

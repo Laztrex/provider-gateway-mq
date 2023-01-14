@@ -1,7 +1,6 @@
 package transport
 
 import (
-	"gateway_mq/internal/controllers"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
@@ -10,15 +9,18 @@ import (
 	"time"
 
 	"gateway_mq/internal/consts"
+	"gateway_mq/internal/controllers"
 	"gateway_mq/internal/schemas"
 	"gateway_mq/internal/utils"
 )
 
 func Provider(c *gin.Context) {
 	var msg schemas.MessageRequest
+	//var requestId string
 
-	requestIdHeaderName := consts.RequestIdHttpHeaderName
+	requestIdHeaderName := consts.KeyRequestId
 	requestId := c.GetString(requestIdHeaderName)
+	log.Info().Msgf("requestId in Provider: %s", requestId)
 
 	if binderr := c.ShouldBindJSON(&msg.Message); binderr != nil {
 		log.Error().Err(binderr).Str(requestIdHeaderName, requestId).
@@ -38,10 +40,11 @@ func Provider(c *gin.Context) {
 	}
 
 	msgCreate := &schemas.MessageCreate{
-		CorrelationId: utils.GetCorrelationId(),
+		//CorrelationId: utils.GetCorrelationId(),
+		CorrelationId: utils.SetCorrelationId(requestId),
 		Body:          msg,
 		Headers:       headers,
-		RoutingKey:    c.Request.Header.Get("routing-key"),
+		RoutingKey:    c.Request.Header.Get(consts.KeyRoutingKey),
 	}
 
 	replyChannel := make(chan schemas.MessageReply)
@@ -49,22 +52,23 @@ func Provider(c *gin.Context) {
 
 	controllers.PublishChannels <- *msgCreate
 
-	waitReply(msgCreate.CorrelationId, replyChannel, c.Writer) //, w http.ResponseWriter
+	waitReply(c, msgCreate.CorrelationId, replyChannel, c.Writer) //, w http.ResponseWriter
 
 }
 
-func waitReply(correlationId string, replyChannel chan schemas.MessageReply, w gin.ResponseWriter) {
+func waitReply(c *gin.Context, correlationId string, replyChannel chan schemas.MessageReply, w gin.ResponseWriter) {
 	for {
 		select {
 		case msgReply := <-replyChannel:
-
-			log.Printf("INFO: [%s] received", correlationId)
 
 			for k := range msgReply.Headers {
 				if str, ok := msgReply.Headers[k].(string); ok {
 					w.Header().Set(k, str)
 				}
 			}
+
+			//rcvRequestId := w.Header().Get(consts.KeyRequestId)
+			//c.Set(consts.KeyRequestId, rcvRequestId)
 
 			response(w, msgReply.Data, 200)
 

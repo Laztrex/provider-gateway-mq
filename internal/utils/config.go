@@ -75,12 +75,26 @@ func GetEnvVar(name string) string {
 }
 
 func GetTlsConf() *tls.Config {
-	caCert, err := os.ReadFile(consts.MqCACERT)
+	var pathCaCert, pathCert, pathKey string
+
+	pathCaCert = GetEnvVar("MQ_CACERT")
+	if pathCaCert == "" {
+		pathCaCert = consts.MqCaCertDefault
+	}
+	caCert, err := os.ReadFile(pathCaCert)
 	if err != nil {
 		log.Debug().Err(err).Msg("Failed to read CACert")
 	}
 
-	cert, err := tls.LoadX509KeyPair(consts.MqCERT, consts.MqKEY)
+	pathCert = GetEnvVar("MQ_CERT")
+	pathKey = GetEnvVar("MQ_KEY")
+	if pathCert == "" {
+		pathCert = consts.MqCertDefault
+	}
+	if pathKey == "" {
+		pathKey = consts.MqKeyDefault
+	}
+	cert, err := tls.LoadX509KeyPair(pathCert, pathKey)
 	if err != nil {
 		log.Debug().Err(err).Msg("Failed to read Certificate, Key")
 	}
@@ -97,8 +111,12 @@ func GetTlsConf() *tls.Config {
 }
 
 func GetCorrelationId() string {
-	t := time.Now().UnixNano() / int64(time.Millisecond)
+	t := Timestamp()
 	return "msg" + strconv.FormatInt(t, 10)
+}
+
+func SetCorrelationId(requestId string) string {
+	return "msg" + requestId
 }
 
 func Timestamp() int64 {

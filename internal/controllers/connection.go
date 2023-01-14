@@ -104,7 +104,7 @@ func (conn *RMQSpec) QueueBind() error {
 	return nil
 }
 
-//Reconnect reconnects the connection
+// Reconnect reconnects the connection
 func (conn *RMQSpec) Reconnect() error {
 
 	if err := conn.Connect(); err != nil {

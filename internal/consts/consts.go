@@ -5,17 +5,21 @@ const EnvFileDirectory = "."
 
 const QueuesConf = "configs/queue_config.yaml"
 
-const RequestIdHttpHeaderName = "request-id"
+const (
+	KeyRequestId     = "RqUID"
+	KeyCorrelationId = "CorrID"
+	KeyRoutingKey    = "routing-key"
+)
 
 const LogPath = "/var/log/metrics.log"
 
 const (
-	MqCACERT = "/certs/gateway_mq/cacert_mq.pem"
-	MqCERT   = "/certs/gateway_mq/client_cert_mq.pem"
-	MqKEY    = "/certs/gateway_mq/client_key_mq.pem"
+	MqCaCertDefault = "/certs/gateway_mq/cacert.pem"
+	MqCertDefault   = "/certs/gateway_mq/client_cert.pem"
+	MqKeyDefault    = "/certs/gateway_mq/client_key.pem"
 )
 
 const (
-	GinCert    = "/certs/gateway_mq/server_cert.pem"
-	GinCertKey = "/certs/gateway_mq/server_key.pem"
+	GinCertDefault    = "/certs/gateway_mq/server_cert.pem"
+	GinCertKeyDefault = "/certs/gateway_mq/server_key.pem"
 )

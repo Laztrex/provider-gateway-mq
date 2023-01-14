@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/rs/zerolog/log"
 
+	"gateway_mq/internal/consts"
 	"gateway_mq/internal/schemas"
 )
 
@@ -35,7 +36,11 @@ func (conn *RMQSpec) ConsumeMessages() {
 			}
 
 		case msg := <-msgChannel:
-			log.Printf("CONSUME: %s", conn.Queue)
+
+			log.Info().
+				Str(consts.KeyCorrelationId, msg.CorrelationId).
+				Msgf("CONSUME: %s", conn.Queue)
+
 			if msg.CorrelationId == "" {
 				continue
 			}
@@ -48,7 +53,9 @@ func (conn *RMQSpec) ConsumeMessages() {
 
 			err = msg.Ack(true)
 			if err != nil {
-				log.Printf("ERROR: fail to ack: %s", err.Error())
+				log.Error().Err(err).
+					Str(consts.KeyCorrelationId, msg.CorrelationId).
+					Msgf("ERROR: fail to ack: %s", err.Error())
 			}
 
 			if rchan, ok := ReplyChannels[msgRply.CorrelationId]; ok {

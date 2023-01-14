@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
+
+	"gateway_mq/internal/consts"
 )
 
 func (conn *RMQSpec) PublishDeclare() {
@@ -34,7 +36,9 @@ func (conn *RMQSpec) PublishMessages() {
 			}
 
 		case msg := <-PublishChannels:
-			log.Printf("PRODUCE: %s", conn.Queue)
+			log.Info().
+				Str(consts.KeyCorrelationId, msg.CorrelationId).
+				Msgf("PRODUCE: %s", conn.Queue)
 
 			body, err := json.Marshal(msg.Body.Message)
 			err = conn.Channel.Publish(
@@ -52,9 +56,13 @@ func (conn *RMQSpec) PublishMessages() {
 				},
 			)
 			if err != nil {
-				log.Err(err).Msgf("ERROR: fail to publish msg: %s", msg.CorrelationId)
+				log.Error().Err(err).
+					Str(consts.KeyCorrelationId, msg.CorrelationId).
+					Msgf("ERROR: fail to publish msg: %s", msg.CorrelationId)
 			}
-			log.Printf("INFO: [%v] - published", msg.CorrelationId)
+			log.Info().
+				Str(consts.KeyCorrelationId, msg.CorrelationId).
+				Msgf("INFO: [%v] - published", msg.CorrelationId)
 		}
 	}
 }

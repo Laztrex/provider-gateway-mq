@@ -18,7 +18,7 @@ func SetupApp() *gin.Engine {
 	app.SetTrustedProxies(nil)
 
 	log.Info().Msg("Adding cors, request id and request logging middleware")
-	app.Use(middlewares.CORSMiddleware(), middlewares.RequestID(), middlewares.RequestLogger())
+	app.Use(middlewares.CORSMiddleware(), middlewares.RequestLogger())
 
 	log.Info().Msg("Setting up routers")
 	transport.SetupRouters(app)
